@@ -1,5 +1,5 @@
 {
-    "name": "storefactory/zohoSubscriptionApi",
+    "name": "storefactory/zoho-subscription-api",
     "require": {
         "guzzlehttp/guzzle": "^6.1"
     }
