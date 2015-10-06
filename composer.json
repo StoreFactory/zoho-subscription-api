@@ -1,7 +1,7 @@
 {
     "name": "storefactory/zoho-subscription-api",
     "type": "library",
-    "description": "Guzzle is a PHP HTTP client library",
+    "description": "Zoho Subscription API is a PHP HTTP client library",
     "require": {
         "guzzlehttp/guzzle": "^6.1"
     },
