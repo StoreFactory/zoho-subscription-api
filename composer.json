@@ -3,14 +3,13 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "ZohoSubscriptionApi": "lib/"
+            "Zoho\\Subscription\\": "lib/"
         }
     },
-    "description": "Zoho Subscription API is a PHP library",
-    "description": "Zoho Subscription API is a PHP HTTP client library",
+    "description": "PHP library to retrieve Zoho Subscription via its API",
     "require": {
         "guzzlehttp/guzzle": "^6.1",
-        "snc/redis-bundle": "^1.1"
+        "doctrine/cache": "^1.4"
     },
     "minimum-stability": "stable"
 }
