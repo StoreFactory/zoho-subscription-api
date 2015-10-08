@@ -14,7 +14,7 @@ class Client
     private $cache;
 
     /**
-     * @var Client
+     * @var GuzzleClient
      */
     protected $client;
 
