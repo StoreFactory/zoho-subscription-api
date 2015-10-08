@@ -1,9 +1,16 @@
 {
     "name": "storefactory/zoho-subscription-api",
     "type": "library",
+    "autoload": {
+        "psr-4": {
+            "ZohoSubscriptionApi": "lib/"
+        }
+    },
+    "description": "Zoho Subscription API is a PHP library",
     "description": "Zoho Subscription API is a PHP HTTP client library",
     "require": {
-        "guzzlehttp/guzzle": "^6.1"
+        "guzzlehttp/guzzle": "^6.1",
+        "snc/redis-bundle": "^1.1"
     },
     "minimum-stability": "stable"
 }
