@@ -34,24 +34,17 @@ class Client
     protected $ttl;
 
     /**
-     * @var bool
-     */
-    protected $enableCache;
-
-    /**
      * @param string                            $token
      * @param int                               $organizationId
-     * @param bool                              $enableCache
      * @param \Doctrine\Common\Cache\Cache|null $cache
      * @param int                               $ttl
      */
-    public function __construct($token, $organizationId, $enableCache = false, Cache $cache = null, $ttl = 7200)
+    public function __construct($token, $organizationId, Cache $cache, $ttl = 7200)
     {
         $this->token          = $token;
         $this->organizationId = $organizationId;
         $this->ttl            = $ttl;
         $this->cache          = $cache;
-        $this->enableCache    = $enableCache;
         $this->client         = new GuzzleClient([
             'headers' => [
                 'Authorization' => 'Zoho-authtoken ' . $token,
@@ -89,15 +82,9 @@ class Client
      */
     public function getFromCache($key)
     {
-        if (!$this->hasCacheAvailable($key)) {
-            return false;
-        }
-
-        if ($this->cache) {
-            // If the results are already cached
-            if ($this->cache->contains($key)) {
-                return unserialize($this->cache->fetch($key));
-            }
+        // If the results are already cached
+        if ($this->cache->contains($key)) {
+            return unserialize($this->cache->fetch($key));
         }
 
         return false;
@@ -118,20 +105,6 @@ class Client
             throw new \LogicException('If you want to save to cache, an unique key must be set');
         }
 
-        if ($this->hasCacheAvailable($key)) {
-            return $this->cache->save($key, serialize($values), $this->ttl);
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function hasCacheAvailable($key)
-    {
-        return true === $this->enableCache && $this->cache && null !== $key;
+        return $this->cache->save($key, serialize($values), $this->ttl);
     }
 }

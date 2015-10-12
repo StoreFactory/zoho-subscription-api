@@ -33,7 +33,7 @@ class Addon extends Client
             $addons = $this->processResponse($response);
 
             foreach ($filters as $key => $filter) {
-                if (array_key_exists($key, $addons['addons'])) {
+                if (array_key_exists($key, current($addons['addons']))) {
                     $addons['addons'] = array_filter($addons['addons'], function ($element) use ($key, $filter) {
                         return $element[$key] == $filter;
                     });

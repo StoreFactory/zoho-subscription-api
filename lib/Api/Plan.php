@@ -40,7 +40,7 @@ class Plan extends Client
             $plans = $this->processResponse($response);
 
             foreach ($filters as $key => $filter) {
-                if (array_key_exists($key, $plans['plans'])) {
+                if (array_key_exists($key, current($plans['plans']))) {
                     $plans['plans'] = array_filter($plans['plans'], function ($element) use ($key, $filter) {
                         return $element[$key] == $filter;
                     });
@@ -48,7 +48,7 @@ class Plan extends Client
             }
 
             if ($withAddons) {
-                $addonApi = new Addon($this->token, $this->organizationId, $this->enableCache, $this->ttl, $this->cache);
+                $addonApi = new Addon($this->token, $this->organizationId, $this->enableCache, $this->cache, $this->ttl);
 
                 foreach ($plans['plans'] as &$plan) {
                     $addons = [];
@@ -56,7 +56,11 @@ class Plan extends Client
                     foreach ($plan['addons'] as $planAddon) {
                         $addon = $addonApi->getAddon($planAddon['addon_code'])['addon'];
 
-                        if ((null !== $addonType) && ($addon['type'] == $addonType) && (in_array($addonType, self::$addonTypes))) {
+                        if (null !== $addonType) {
+                            if (($addon['type'] == $addonType) && (in_array($addonType, self::$addonTypes))) {
+                                $addons[] = $addon;
+                            }
+                        } else {
                             $addons[] = $addon;
                         }
                     }
