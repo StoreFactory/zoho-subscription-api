@@ -17,15 +17,14 @@ class Addon extends Client
 
     /**
      * @param array $filters associative array of filters
-     * @param null  $cacheKey
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function listAddons($filters = [], $cacheKey = null)
+    public function listAddons($filters = [])
     {
-        $hit = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache('addons');
 
         if (false === $hit) {
             $response = $this->client->request('GET', 'addons');
@@ -40,33 +39,31 @@ class Addon extends Client
                 }
             }
 
-            $this->saveToCache($cacheKey, $addons['addons']);
+            $this->saveToCache('addons', $addons['addons']);
 
             return $addons['addons'];
         }
 
         return $hit;
-
     }
 
     /**
-     * @param int  $code
-     * @param null $cacheKey
+     * @param int  $addonCode
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function getAddon($code, $cacheKey = null)
+    public function getAddon($addonCode)
     {
-        $hit = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache('addon_'.$addonCode);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', sprintf('addons/%s', $code));
+            $response = $this->client->request('GET', sprintf('addons/%s', $addonCode));
 
             $addon = $this->processResponse($response);
 
-            $this->saveToCache($cacheKey, $addon);
+            $this->saveToCache('addon_'.$addonCode, $addon);
 
             return $addon;
         }

@@ -101,7 +101,7 @@ class Client
      */
     public function saveToCache($key, $values)
     {
-        if (null !== $key) {
+        if (null === $key) {
             throw new \LogicException('If you want to save to cache, an unique key must be set');
         }
 
