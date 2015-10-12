@@ -48,7 +48,7 @@ class Plan extends Client
             }
 
             if ($withAddons) {
-                $addonApi = new Addon($this->token, $this->organizationId, $this->enableCache, $this->cache, $this->ttl);
+                $addonApi = new Addon($this->token, $this->organizationId, $this->cache, $this->ttl);
 
                 foreach ($plans['plans'] as &$plan) {
                     $addons = [];
