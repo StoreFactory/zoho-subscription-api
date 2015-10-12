@@ -42,10 +42,10 @@ class Client
      * @param string                            $token
      * @param int                               $organizationId
      * @param bool                              $enableCache
-     * @param int                               $ttl
      * @param \Doctrine\Common\Cache\Cache|null $cache
+     * @param int                               $ttl
      */
-    public function __construct($token, $organizationId, $enableCache = false, $ttl = 7200, Cache $cache = null)
+    public function __construct($token, $organizationId, $enableCache = false, Cache $cache = null, $ttl = 7200)
     {
         $this->token          = $token;
         $this->organizationId = $organizationId;
