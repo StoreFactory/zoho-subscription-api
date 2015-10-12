@@ -40,9 +40,9 @@ class Addon extends Client
                 }
             }
 
-            $this->saveToCache($cacheKey, $addons);
+            $this->saveToCache($cacheKey, $addons['addons']);
 
-            return $addons;
+            return $addons['addons'];
         }
 
         return $hit;

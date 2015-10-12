@@ -9,9 +9,19 @@ use GuzzleHttp\Psr7\Response;
 class Client
 {
     /**
+     * @var String
+     */
+    protected $token;
+
+    /**
+     * @var String
+     */
+    protected $organizationId;
+
+    /**
      * @var Cache
      */
-    private $cache;
+    protected $cache;
 
     /**
      * @var GuzzleClient
@@ -21,26 +31,28 @@ class Client
     /**
      * @var int
      */
-    private $ttl;
+    protected $ttl;
 
     /**
      * @var bool
      */
-    private $enableCache;
+    protected $enableCache;
 
     /**
      * @param string                            $token
      * @param int                               $organizationId
      * @param bool                              $enableCache
-     * @param \Doctrine\Common\Cache\Cache|null $cache
      * @param int                               $ttl
+     * @param \Doctrine\Common\Cache\Cache|null $cache
      */
-    public function __construct($token, $organizationId, $enableCache = false, Cache $cache = null, $ttl = 3600)
+    public function __construct($token, $organizationId, $enableCache = false, $ttl = 7200, Cache $cache = null)
     {
-        $this->ttl          = $ttl;
-        $this->cache        = $cache;
-        $this->enableCache  = $enableCache;
-        $this->client       = new GuzzleClient([
+        $this->token          = $token;
+        $this->organizationId = $organizationId;
+        $this->ttl            = $ttl;
+        $this->cache          = $cache;
+        $this->enableCache    = $enableCache;
+        $this->client         = new GuzzleClient([
             'headers' => [
                 'Authorization' => 'Zoho-authtoken ' . $token,
                 'X-com-zoho-subscriptions-organizationid' => $organizationId

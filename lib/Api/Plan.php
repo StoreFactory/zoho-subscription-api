@@ -15,6 +15,11 @@ use Zoho\Subscription\Client\Client;
  */
 class Plan extends Client
 {
+    static $addonTypes = [
+        "recurring",
+        "one_time"
+    ];
+
     /**
      * Returns all plans
      *
@@ -25,7 +30,7 @@ class Plan extends Client
      *
      * @return array
      */
-    public function listPlans($filters = [], $cacheKey = null)
+    public function listPlans($filters = [], $cacheKey = null, $withAddons = true, $addonType = null)
     {
         $hit = $this->getFromCache($cacheKey);
 
@@ -42,9 +47,27 @@ class Plan extends Client
                 }
             }
 
-            $this->saveToCache($cacheKey, $plans);
+            if ($withAddons) {
+                $addonApi = new Addon($this->token, $this->organizationId, $this->enableCache, $this->ttl, $this->cache);
 
-            return $plans;
+                foreach ($plans['plans'] as &$plan) {
+                    $addons = [];
+
+                    foreach ($plan['addons'] as $planAddon) {
+                        $addon = $addonApi->getAddon($planAddon['addon_code'])['addon'];
+
+                        if ((null !== $addonType) && ($addon['type'] == $addonType) && (in_array($addonType, self::$addonTypes))) {
+                            $addons[] = $addon;
+                        }
+                    }
+
+                    $plan['addons'] = $addons;
+                }
+            }
+
+            $this->saveToCache($cacheKey, $plans['plans']);
+
+            return $plans['plans'];
         }
 
         return $hit;
