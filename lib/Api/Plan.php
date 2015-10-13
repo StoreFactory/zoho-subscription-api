@@ -31,21 +31,22 @@ class Plan extends Client
      */
     public function listPlans($filters = [], $withAddons = true, $addonType = null)
     {
-        $hit = $this->getFromCache('plans');
+        $cacheKey = 'plans';
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', 'plans');
+            $response = $this->client->request('GET', $cacheKey);
 
             $plans = $this->processResponse($response);
-            $plans = $this->filterPlans($plans, $filters);
+            $hit   = $plans['plans'];
 
-            if ($withAddons) {
-                $plans = $this->getAddonsForPlan($plans, $addonType);
-            }
+            $this->saveToCache('plans', $hit);
+        }
 
-            $this->saveToCache('plans', $plans['plans']);
+        $hit = $this->filterPlans($hit, $filters);
 
-            return $plans['plans'];
+        if ($withAddons) {
+            $hit = $this->getAddonsForPlan($hit, $addonType);
         }
 
         return $hit;
@@ -63,14 +64,15 @@ class Plan extends Client
      */
     public function getPlan($planCode)
     {
-        $hit = $this->getFromCache('plan_'.$planCode);
+        $cacheKey = sprintf('plan_%s', $planCode);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('/plans/%s', $planCode));
 
             $plan = $this->processResponse($response);
 
-            $this->saveToCache('plan_'.$planCode, $plan);
+            $this->saveToCache($cacheKey, $plan);
 
             return $plan;
         }
@@ -78,11 +80,19 @@ class Plan extends Client
         return $hit;
     }
 
+    /**
+     * get reccurent addons for given plan
+     *
+     * @param array  $plans
+     * @param string $addonType
+     *
+     * @return array
+     */
     public function getAddonsForPlan($plans, $addonType)
     {
         $addonApi = new Addon($this->token, $this->organizationId, $this->cache, $this->ttl);
 
-        foreach ($plans['plans'] as &$plan) {
+        foreach ($plans as &$plan) {
             $addons = [];
 
             foreach ($plan['addons'] as $planAddon) {
@@ -103,11 +113,19 @@ class Plan extends Client
         return $plans;
     }
 
+    /**
+     * filter given plans with given filters
+     *
+     * @param array $plans
+     * @param array $filters
+     *
+     * @return array
+     */
     public function filterPlans($plans, $filters)
     {
         foreach ($filters as $key => $filter) {
-            if (array_key_exists($key, current($plans['plans']))) {
-                $plans['plans'] = array_filter($plans['plans'], function ($element) use ($key, $filter) {
+            if (array_key_exists($key, current($plans))) {
+                $plans = array_filter($plans, function ($element) use ($key, $filter) {
                     return $element[$key] == $filter;
                 });
             }

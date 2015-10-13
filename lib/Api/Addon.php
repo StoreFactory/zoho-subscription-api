@@ -14,7 +14,6 @@ use Zoho\Subscription\Client\Client;
  */
 class Addon extends Client
 {
-
     /**
      * @param array $filters associative array of filters
      *
@@ -24,24 +23,24 @@ class Addon extends Client
      */
     public function listAddons($filters = [])
     {
-        $hit = $this->getFromCache('addons');
+        $cacheKey = 'addons';
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', 'addons');
+            $response = $this->client->request('GET', $cacheKey);
 
             $addons = $this->processResponse($response);
+            $hit    = $addons['addons'];
 
-            foreach ($filters as $key => $filter) {
-                if (array_key_exists($key, current($addons['addons']))) {
-                    $addons['addons'] = array_filter($addons['addons'], function ($element) use ($key, $filter) {
-                        return $element[$key] == $filter;
-                    });
-                }
+            $this->saveToCache($cacheKey, $hit);
+        }
+
+        foreach ($filters as $key => $filter) {
+            if (array_key_exists($key, current($hit))) {
+                $hit = array_filter($hit, function ($element) use ($key, $filter) {
+                    return $element[$key] == $filter;
+                });
             }
-
-            $this->saveToCache('addons', $addons['addons']);
-
-            return $addons['addons'];
         }
 
         return $hit;
@@ -56,14 +55,15 @@ class Addon extends Client
      */
     public function getAddon($addonCode)
     {
-        $hit = $this->getFromCache('addon_'.$addonCode);
+        $cacheKey = sprintf('addon_%s', $addonCode);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('addons/%s', $addonCode));
 
             $addon = $this->processResponse($response);
 
-            $this->saveToCache('addon_'.$addonCode, $addon);
+            $this->saveToCache($cacheKey, $addon);
 
             return $addon;
         }
