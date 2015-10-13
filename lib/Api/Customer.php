@@ -21,7 +21,7 @@ class Customer extends Client
      */
     public function getCustomerByEmail($customerEmail)
     {
-        $cacheKey = sprintf('zoho_customer_%s', $customerEmail);
+        $cacheKey = sprintf('zoho_customer_%s', md5($customerEmail));
         $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
