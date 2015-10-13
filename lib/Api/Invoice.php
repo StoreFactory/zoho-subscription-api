@@ -5,27 +5,24 @@ namespace Zoho\Subscription\Api;
 use Zoho\Subscription\Client\Client;
 
 /**
- * Invoice
- *
- * @author Tristan Perchec <tristan.perchec@yproximite.com>
+ * @author Hang Pham <thi@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
  *
- * @link https://www.zoho.com/subscriptions/api/v1/#addons
+ * @link https://www.zoho.com/subscriptions/api/v1/#invoices
  */
 class Invoice extends Client
 {
-
     /**
      * @param string $customerId The customer's id
-     * @param null   $cacheKey
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function listInvoicesByCustomer($customerId, $cacheKey = null)
+    public function listInvoicesByCustomer($customerId)
     {
-        $hit = $this->getFromCache($cacheKey);
+        $cacheKey = sprintf('zoho_invoices_%s', $customerId);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', 'invoices', [
@@ -42,20 +39,19 @@ class Invoice extends Client
         }
 
         return $hit;
-
     }
 
     /**
-     * @param string $invoiceId
-     * @param null   $cacheKey
+     * @param string $invoiceId The invoice's id
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function getInvoice($invoiceId, $cacheKey = null)
+    public function getInvoice($invoiceId)
     {
-        $hit = $this->getFromCache($cacheKey);
+        $cacheKey = sprintf('zoho_invoice_%s', $invoiceId);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('invoices/%s', $invoiceId));
