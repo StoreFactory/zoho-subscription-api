@@ -31,7 +31,7 @@ class Customer extends Client
 
             $result = $this->processResponse($response);
 
-            $customer = $result['customer'];
+            $customer = $result['customers'];
 
             $this->saveToCache($cacheKey, $customer);
 
