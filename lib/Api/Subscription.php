@@ -26,14 +26,12 @@ class Subscription extends Client
             'json' => json_encode($data)
         ]);
 
-        $hasSucceeded = $this->processResponse($response);
-
-        return $hasSucceeded;
+        return $this->processResponse($response);
     }
 
     /**
      * @param string $subscriptionId The subscription's id
-     * @param array $data
+     * @param array  $data
      *
      * @throws \Exception
      *
@@ -45,14 +43,12 @@ class Subscription extends Client
             'json' => json_encode($data)
         ]);
 
-        $hasSucceeded = $this->processResponse($response);
-
-        return $hasSucceeded;
+        return $this->processResponse($response);
     }
 
     /**
      * @param string $subscriptionId The subscription's id
-     * @param string $couponCode The coupon's code
+     * @param string $couponCode     The coupon's code
      *
      * @throws \Exception
      *
@@ -62,9 +58,7 @@ class Subscription extends Client
     {
         $response = $this->client->request('POST', sprintf('subscriptions/%s/coupons/%s', $subscriptionId, $couponCode));
 
-        $hasSucceeded = $this->processResponse($response);
-
-        return $hasSucceeded;
+        return $this->processResponse($response);
     }
 
     /**
@@ -78,9 +72,7 @@ class Subscription extends Client
     {
         $response = $this->client->request('POST', sprintf('subscriptions/%s/reactivate', $subscriptionId));
 
-        $hasSucceeded = $this->processResponse($response);
-
-        return $hasSucceeded;
+        return $this->processResponse($response);
     }
 
     /**
@@ -105,6 +97,35 @@ class Subscription extends Client
             $this->saveToCache($cacheKey, $subscription);
 
             return $subscription;
+        }
+
+        return $hit;
+    }
+
+    /**
+     * @param string $customerId The customer's id
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    public function listSubscriptionsByCustomer($customerId)
+    {
+        $cacheKey = sprintf('zoho_subscriptions_%s', $customerId);
+        $hit      = $this->getFromCache($cacheKey);
+
+        if (false === $hit) {
+            $response = $this->client->request('GET', 'subscriptions', [
+                'query' => ['customer_id' => $customerId]
+            ]);
+
+            $result = $this->processResponse($response);
+
+            $invoices = $result['subscriptions'];
+
+            $this->saveToCache($cacheKey, $invoices);
+
+            return $invoices;
         }
 
         return $hit;
