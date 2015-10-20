@@ -68,4 +68,19 @@ class Invoice extends Client
         return $hit;
     }
 
+    /**
+     * @param string $invoiceId The invoice's id
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    public function getInvoicePdf($invoiceId)
+    {
+        $response = $this->client->request('GET', sprintf('invoices/%s', $invoiceId), [
+            'query' => ['accept' => 'pdf']
+        ]);
+
+        return $response;
+    }
 }
