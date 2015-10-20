@@ -73,16 +73,14 @@ class Invoice extends Client
      *
      * @throws \Exception
      *
-     * @return string
+     * @return array
      */
-    public function getUrlPdf($invoiceId)
+    public function getInvoicePdf($invoiceId)
     {
         $response = $this->client->request('GET', sprintf('invoices/%s', $invoiceId), [
             'query' => ['accept' => 'pdf']
         ]);
 
-        $result = $this->processResponse($response);
-
-        return $result;
+        return $response;
     }
 }
