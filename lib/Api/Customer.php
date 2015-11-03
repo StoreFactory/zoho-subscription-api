@@ -66,4 +66,53 @@ class Customer extends Client
 
         return $hit;
     }
+
+    /**
+     * @param string $customerId The customer's id
+     * @param array $data
+     *
+     * @throws \Exception
+     *
+     * @return array|bool
+     */
+    public function updateCustomer($customerId, $data)
+    {
+        $response = $this->client->request('PUT', sprintf('customers/%s', $customerId), [
+            'json' => json_encode($data)
+        ]);
+
+        $result = $this->processResponse($response);
+
+        if ($result['code'] == '0') {
+            $customer = $result['customer'];
+
+            return $customer;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param array $data
+     *
+     * @throws \Exception
+     *
+     * @return array|bool
+     */
+    public function createCustomer($data)
+    {
+        $response = $this->client->request('POST', [
+            'json' => json_encode($data)
+        ]);
+
+        $result   = $this->processResponse($response);
+
+        if ($result['code'] == '0') {
+            $customer = $result['customer'];
+
+            return $customer;
+        } else {
+            return false;
+        }
+    }
 }
