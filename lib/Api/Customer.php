@@ -19,7 +19,7 @@ class Customer extends Client
      *
      * @return array
      */
-    public function getCustomerByEmail($customerEmail)
+    public function getListCustomersByEmail($customerEmail)
     {
         $cacheKey = sprintf('zoho_customer_%s', md5($customerEmail));
         $hit      = $this->getFromCache($cacheKey);
@@ -31,16 +31,27 @@ class Customer extends Client
 
             $result = $this->processResponse($response);
 
-            $customer = $result['customers'];
+            $customers = $result['customers'];
 
-            $this->saveToCache($cacheKey, $customer);
+            $this->saveToCache($cacheKey, $customers);
 
-            return $customer;
+            return $customers;
         }
 
         return $hit;
     }
 
+    /**
+     * @param string $customerEmail
+     *
+     * @return array
+     */
+    public function getCustomerByEmail($customerEmail)
+    {
+        $customers = $this->getListCustomersByEmail($customerEmail);
+
+        return $customers[0];
+    }
     /**
      * @param string $customerId The customer's id
      *
