@@ -46,8 +46,8 @@ class Client
         $this->ttl            = $ttl;
         $this->cache          = $cache;
         $this->client         = new GuzzleClient([
-            'headers' => [
-                'Authorization' => 'Zoho-authtoken ' . $token,
+            'headers'  => [
+                'Authorization'                           => 'Zoho-authtoken '.$token,
                 'X-com-zoho-subscriptions-organizationid' => $organizationId
             ],
             'base_uri' => 'https://subscriptions.zoho.com/api/v1/'
@@ -66,7 +66,7 @@ class Client
         $data = json_decode($response->getBody(), true);
 
         if ($data['code'] != 0) {
-            throw new \Exception('Zoho Api subscription error : ' . $data['message']);
+            throw new \Exception('Zoho Api subscription error : '.$data['message']);
         }
 
         return $data;
@@ -90,7 +90,6 @@ class Client
         return false;
     }
 
-
     /**
      * @param string $key
      * @param mixed  $values
@@ -106,5 +105,13 @@ class Client
         }
 
         return $this->cache->save($key, serialize($values), $this->ttl);
+    }
+
+    /**
+     * @param string $key
+     */
+    public function deleteCacheByKey($key)
+    {
+        $this->cache->delete($key);
     }
 }

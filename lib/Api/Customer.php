@@ -8,7 +8,7 @@ use Zoho\Subscription\Client\Client;
  * @author Hang Pham <thi@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
  *
- * @link https://www.zoho.com/subscriptions/api/v1/#customers
+ * @link   https://www.zoho.com/subscriptions/api/v1/#customers
  */
 class Customer extends Client
 {
@@ -50,8 +50,9 @@ class Customer extends Client
     {
         $customers = $this->getListCustomersByEmail($customerEmail);
 
-        return $customers[0];
+        return $this->getCustomerById($customers[0]['customer_id']);
     }
+
     /**
      * @param string $customerId The customer's id
      *
@@ -66,7 +67,7 @@ class Customer extends Client
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('customers/%s', $customerId));
-            $result = $this->processResponse($response);
+            $result   = $this->processResponse($response);
 
             $customer = $result['customer'];
 
@@ -80,7 +81,7 @@ class Customer extends Client
 
     /**
      * @param string $customerId The customer's id
-     * @param array $data
+     * @param array  $data
      *
      * @throws \Exception
      *
@@ -89,7 +90,8 @@ class Customer extends Client
     public function updateCustomer($customerId, $data)
     {
         $response = $this->client->request('PUT', sprintf('customers/%s', $customerId), [
-            'json' => json_encode($data)
+            'content-type' => 'application/json',
+            'body'         => json_encode($data)
         ]);
 
         $result = $this->processResponse($response);
@@ -97,10 +99,24 @@ class Customer extends Client
         if ($result['code'] == '0') {
             $customer = $result['customer'];
 
+            $this->deleteCustomerCache($customer);
+
             return $customer;
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param array $customer
+     */
+    private function deleteCustomerCache($customer)
+    {
+        $cacheKey = sprintf('zoho_customer_%s', $customer['customer_id']);
+        $this->deleteCacheByKey($cacheKey);
+
+        $cacheKey = sprintf('zoho_customer_%s', md5($customer['email']));
+        $this->deleteCacheByKey($cacheKey);
     }
 
     /**
@@ -113,10 +129,11 @@ class Customer extends Client
     public function createCustomer($data)
     {
         $response = $this->client->request('POST', [
-            'json' => json_encode($data)
+            'content-type' => 'application/json',
+            'body'         => json_encode($data)
         ]);
 
-        $result   = $this->processResponse($response);
+        $result = $this->processResponse($response);
 
         if ($result['code'] == '0') {
             $customer = $result['customer'];
