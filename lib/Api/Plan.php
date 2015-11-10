@@ -56,7 +56,7 @@ class Plan extends Client
     /**
      * Returns a Plan by its identifier
      *
-     * @param int  $planCode
+     * @param string $planCode
      *
      * @throws \Exception
      *
@@ -70,7 +70,8 @@ class Plan extends Client
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('/plans/%s', $planCode));
 
-            $plan = $this->processResponse($response);
+            $result = $this->processResponse($response);
+            $plan   = $result['plan'];
 
             $this->saveToCache($cacheKey, $plan);
 
@@ -96,7 +97,7 @@ class Plan extends Client
             $addons = [];
 
             foreach ($plan['addons'] as $planAddon) {
-                $addon = $addonApi->getAddon($planAddon['addon_code'])['addon'];
+                $addon = $addonApi->getAddon($planAddon['addon_code']);
 
                 if (null !== $addonType) {
                     if (($addon['type'] == $addonType) && (in_array($addonType, self::$addonTypes))) {

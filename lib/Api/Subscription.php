@@ -14,16 +14,36 @@ use Zoho\Subscription\Client\Client;
 class Subscription extends Client
 {
     /**
+     * @param int   $customerId
      * @param array $data
      *
      * @throws \Exception
      *
      * @return string
      */
-    public function createSubscription($data)
+    public function createSubscription($customerId, $data)
     {
         $response = $this->client->request('POST', 'subscriptions', [
-            'json' => json_encode($data)
+            'content-type' => 'application/json',
+            'body'         => json_encode($data)
+        ]);
+
+        return $this->processResponse($response);
+    }
+
+    /**
+     * @param int   $subscriptionId
+     * @param array $data
+     *
+     * @throws \Exception
+     *
+     * @return string
+     */
+    public function updateSubscription($subscriptionId, $data)
+    {
+        $response = $this->client->request('PUT', sprintf('subscriptions/%s', $subscriptionId), [
+            'content-type' => 'application/json',
+            'body'         => json_encode($data)
         ]);
 
         return $this->processResponse($response);
@@ -121,11 +141,11 @@ class Subscription extends Client
 
             $result = $this->processResponse($response);
 
-            $invoices = $result['subscriptions'];
+            $subscriptions = $result['subscriptions'];
 
-            $this->saveToCache($cacheKey, $invoices);
+            $this->saveToCache($cacheKey, $subscriptions);
 
-            return $invoices;
+            return $subscriptions;
         }
 
         return $hit;
