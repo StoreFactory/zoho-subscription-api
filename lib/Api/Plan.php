@@ -95,7 +95,7 @@ class Plan extends Client
             $addons = [];
 
             foreach ($plan['addons'] as $planAddon) {
-                $addon = $addonApi->getAddon($planAddon['addon_code'])['addon'];
+                $addon = $addonApi->getAddon($planAddon['addon_code']);
 
                 if (null !== $addonType) {
                     if (($addon['type'] == $addonType) && (in_array($addonType, self::$addonTypes))) {
