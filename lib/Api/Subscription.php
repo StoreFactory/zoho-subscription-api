@@ -5,7 +5,7 @@ namespace Zoho\Subscription\Api;
 use Zoho\Subscription\Client\Client;
 
 /**
- * Subscription
+ * Subscription.
  *
  * @author Elodie Nazaret <elodie@yproximite.com>
  *
@@ -23,7 +23,7 @@ class Subscription extends Client
     public function createSubscription($data)
     {
         $response = $this->client->request('POST', 'subscriptions', [
-            'json' => json_encode($data)
+            'json' => json_encode($data),
         ]);
 
         return $this->processResponse($response);
@@ -40,7 +40,7 @@ class Subscription extends Client
     public function buyOneTimeAddonForASubscription($subscriptionId, $data)
     {
         $response = $this->client->request('POST', sprintf('subscriptions/%s/buyonetimeaddon', $subscriptionId), [
-            'json' => json_encode($data)
+            'json' => json_encode($data),
         ]);
 
         return $this->processResponse($response);
@@ -85,7 +85,7 @@ class Subscription extends Client
     public function getSubscription($subscriptionId)
     {
         $cacheKey = sprintf('zoho_subscription_%s', $subscriptionId);
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('subscriptions/%s', $subscriptionId));
@@ -112,11 +112,11 @@ class Subscription extends Client
     public function listSubscriptionsByCustomer($customerId)
     {
         $cacheKey = sprintf('zoho_subscriptions_%s', $customerId);
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', 'subscriptions', [
-                'query' => ['customer_id' => $customerId]
+                'query' => ['customer_id' => $customerId],
             ]);
 
             $result = $this->processResponse($response);

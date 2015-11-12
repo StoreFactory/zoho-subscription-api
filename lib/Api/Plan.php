@@ -4,9 +4,8 @@ namespace Zoho\Subscription\Api;
 
 use Zoho\Subscription\Client\Client;
 
-
 /**
- * Plan
+ * Plan.
  *
  * @author Tristan Perchec <tristan.perchec@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
@@ -15,13 +14,13 @@ use Zoho\Subscription\Client\Client;
  */
 class Plan extends Client
 {
-    static $addonTypes = [
-        "recurring",
-        "one_time"
+    public static $addonTypes = [
+        'recurring',
+        'one_time',
     ];
 
     /**
-     * Returns all plans
+     * Returns all plans.
      *
      * @param array $filters associative array of filters
      *
@@ -32,13 +31,13 @@ class Plan extends Client
     public function listPlans($filters = [], $withAddons = true, $addonType = null)
     {
         $cacheKey = 'plans';
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', $cacheKey);
 
             $plans = $this->processResponse($response);
-            $hit   = $plans['plans'];
+            $hit = $plans['plans'];
 
             $this->saveToCache('plans', $hit);
         }
@@ -52,11 +51,10 @@ class Plan extends Client
         return $hit;
     }
 
-
     /**
-     * Returns a Plan by its identifier
+     * Returns a Plan by its identifier.
      *
-     * @param int  $planCode
+     * @param int $planCode
      *
      * @throws \Exception
      *
@@ -65,12 +63,13 @@ class Plan extends Client
     public function getPlan($planCode)
     {
         $cacheKey = sprintf('plan_%s', $planCode);
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('/plans/%s', $planCode));
 
-            $plan = $this->processResponse($response);
+            $data = $this->processResponse($response);
+            $plan = $data['plan'];
 
             $this->saveToCache($cacheKey, $plan);
 
@@ -81,7 +80,7 @@ class Plan extends Client
     }
 
     /**
-     * get reccurent addons for given plan
+     * get reccurent addons for given plan.
      *
      * @param array  $plans
      * @param string $addonType
@@ -114,7 +113,7 @@ class Plan extends Client
     }
 
     /**
-     * filter given plans with given filters
+     * filter given plans with given filters.
      *
      * @param array $plans
      * @param array $filters

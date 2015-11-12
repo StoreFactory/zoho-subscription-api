@@ -41,16 +41,16 @@ class Client
      */
     public function __construct($token, $organizationId, Cache $cache, $ttl = 7200)
     {
-        $this->token          = $token;
+        $this->token = $token;
         $this->organizationId = $organizationId;
-        $this->ttl            = $ttl;
-        $this->cache          = $cache;
-        $this->client         = new GuzzleClient([
-            'headers'  => [
-                'Authorization'                           => 'Zoho-authtoken '.$token,
-                'X-com-zoho-subscriptions-organizationid' => $organizationId
+        $this->ttl = $ttl;
+        $this->cache = $cache;
+        $this->client = new GuzzleClient([
+            'headers' => [
+                'Authorization' => 'Zoho-authtoken '.$token,
+                'X-com-zoho-subscriptions-organizationid' => $organizationId,
             ],
-            'base_uri' => 'https://subscriptions.zoho.com/api/v1/'
+            'base_uri' => 'https://subscriptions.zoho.com/api/v1/',
         ]);
     }
 
@@ -71,7 +71,6 @@ class Client
 
         return $data;
     }
-
 
     /**
      * @param $key

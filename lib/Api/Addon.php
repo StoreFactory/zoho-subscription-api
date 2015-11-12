@@ -5,7 +5,7 @@ namespace Zoho\Subscription\Api;
 use Zoho\Subscription\Client\Client;
 
 /**
- * Addon
+ * Addon.
  *
  * @author Tristan Perchec <tristan.perchec@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
@@ -24,13 +24,13 @@ class Addon extends Client
     public function listAddons($filters = [])
     {
         $cacheKey = 'addons';
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', $cacheKey);
 
             $addons = $this->processResponse($response);
-            $hit    = $addons['addons'];
+            $hit = $addons['addons'];
 
             $this->saveToCache($cacheKey, $hit);
         }
@@ -47,7 +47,7 @@ class Addon extends Client
     }
 
     /**
-     * @param int  $addonCode
+     * @param int $addonCode
      *
      * @throws \Exception
      *
@@ -56,7 +56,7 @@ class Addon extends Client
     public function getAddon($addonCode)
     {
         $cacheKey = sprintf('addon_%s', $addonCode);
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('addons/%s', $addonCode));
@@ -70,5 +70,4 @@ class Addon extends Client
 
         return $hit;
     }
-
 }

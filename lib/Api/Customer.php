@@ -22,11 +22,11 @@ class Customer extends Client
     public function getListCustomersByEmail($customerEmail)
     {
         $cacheKey = sprintf('zoho_customer_%s', md5($customerEmail));
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', 'customers', [
-                'query' => ['email' => $customerEmail]
+                'query' => ['email' => $customerEmail],
             ]);
 
             $result = $this->processResponse($response);
@@ -63,11 +63,11 @@ class Customer extends Client
     public function getCustomerById($customerId)
     {
         $cacheKey = sprintf('zoho_customer_%s', $customerId);
-        $hit      = $this->getFromCache($cacheKey);
+        $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('customers/%s', $customerId));
-            $result   = $this->processResponse($response);
+            $result = $this->processResponse($response);
 
             $customer = $result['customer'];
 
@@ -91,7 +91,7 @@ class Customer extends Client
     {
         $response = $this->client->request('PUT', sprintf('customers/%s', $customerId), [
             'content-type' => 'application/json',
-            'body'         => json_encode($data)
+            'body' => json_encode($data),
         ]);
 
         $result = $this->processResponse($response);
@@ -130,7 +130,7 @@ class Customer extends Client
     {
         $response = $this->client->request('POST', [
             'content-type' => 'application/json',
-            'body'         => json_encode($data)
+            'body' => json_encode($data),
         ]);
 
         $result = $this->processResponse($response);
