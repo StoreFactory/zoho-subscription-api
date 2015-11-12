@@ -61,7 +61,8 @@ class Addon extends Client
         if (false === $hit) {
             $response = $this->client->request('GET', sprintf('addons/%s', $addonCode));
 
-            $addon = $this->processResponse($response);
+            $data = $this->processResponse($response);
+            $addon = $data['addon'];
 
             $this->saveToCache($cacheKey, $addon);
 
