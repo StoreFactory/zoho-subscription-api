@@ -34,12 +34,12 @@ class Plan extends Client
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', $cacheKey);
+            $response = $this->client->request('GET', 'plans');
 
             $plans = $this->processResponse($response);
             $hit = $plans['plans'];
 
-            $this->saveToCache('plans', $hit);
+            $this->saveToCache($cacheKey, $hit);
         }
 
         $hit = $this->filterPlans($hit, $filters);
@@ -66,7 +66,7 @@ class Plan extends Client
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', sprintf('/plans/%s', $planCode));
+            $response = $this->client->request('GET', sprintf('plans/%s', $planCode));
 
             $data = $this->processResponse($response);
             $plan = $data['plan'];
