@@ -1,5 +1,5 @@
 {
-    "name": "storefactory/zoho-subscription-api",
+    "name": "WondersLabCorporation/zoho-subscription-api",
     "type": "library",
     "autoload": {
         "psr-4": {
