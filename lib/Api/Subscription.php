@@ -23,7 +23,8 @@ class Subscription extends Client
     public function createSubscription($data)
     {
         $response = $this->client->request('POST', 'subscriptions', [
-            'json' => json_encode($data),
+            'content-type' => 'application/json',
+            'body' => json_encode($data),
         ]);
 
         return $this->processResponse($response);
