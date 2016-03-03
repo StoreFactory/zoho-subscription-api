@@ -3,6 +3,24 @@
 # zoho-subscription-api
 An implementation of Zoho API subscription in PHP with cache handling
 
-# Installing the API
-The recommended way to install it is through Composer.
+Fork of [storefactory/zoho-subscription-api](https://github.com/StoreFactory/zoho-subscription-api)
 
+Installation
+------------
+The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
+
+Add to your `composer.json` file
+
+```json
+"repositories": [
+        {
+            "url": "https://github.com/WondersLabCorporation/zoho-subscription-api.git",
+            "type": "git"
+        }
+    ]
+```
+and run
+
+```
+composer require WondersLabCorporation/zoho-subscription-api:"dev-master"
+```
