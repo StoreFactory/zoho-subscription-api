@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
 
@@ -20,12 +21,9 @@ class Subscription extends Client
      *
      * @return string
      */
-    public function createSubscription($data)
+    public function createSubscription(array $data)
     {
-        $response = $this->client->request('POST', 'subscriptions', [
-            'content-type' => 'application/json',
-            'body' => json_encode($data),
-        ]);
+        $response = $this->sendRequest('POST', 'subscriptions', ['content-type' => 'application/json'], json_encode($data));
 
         return $this->processResponse($response);
     }
@@ -38,11 +36,9 @@ class Subscription extends Client
      *
      * @return string
      */
-    public function buyOneTimeAddonForASubscription($subscriptionId, $data)
+    public function buyOneTimeAddonForASubscription(string $subscriptionId, array $data)
     {
-        $response = $this->client->request('POST', sprintf('subscriptions/%s/buyonetimeaddon', $subscriptionId), [
-            'json' => json_encode($data),
-        ]);
+        $response = $this->sendRequest('POST', sprintf('subscriptions/%s/buyonetimeaddon', $subscriptionId), [], json_encode($data));
 
         return $this->processResponse($response);
     }
@@ -55,9 +51,9 @@ class Subscription extends Client
      *
      * @return array
      */
-    public function associateCouponToASubscription($subscriptionId, $couponCode)
+    public function associateCouponToASubscription(string $subscriptionId, string $couponCode)
     {
-        $response = $this->client->request('POST', sprintf('subscriptions/%s/coupons/%s', $subscriptionId, $couponCode));
+        $response = $this->sendRequest('POST', sprintf('subscriptions/%s/coupons/%s', $subscriptionId, $couponCode));
 
         return $this->processResponse($response);
     }
@@ -69,9 +65,9 @@ class Subscription extends Client
      *
      * @return string
      */
-    public function reactivateSubscription($subscriptionId)
+    public function reactivateSubscription(string $subscriptionId)
     {
-        $response = $this->client->request('POST', sprintf('subscriptions/%s/reactivate', $subscriptionId));
+        $response = $this->sendRequest('POST', sprintf('subscriptions/%s/reactivate', $subscriptionId));
 
         return $this->processResponse($response);
     }
@@ -83,13 +79,13 @@ class Subscription extends Client
      *
      * @return array
      */
-    public function getSubscription($subscriptionId)
+    public function getSubscription(string $subscriptionId)
     {
         $cacheKey = sprintf('zoho_subscription_%s', $subscriptionId);
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', sprintf('subscriptions/%s', $subscriptionId));
+            $response = $this->sendRequest('GET', sprintf('subscriptions/%s', $subscriptionId));
 
             $result = $this->processResponse($response);
 
@@ -110,15 +106,13 @@ class Subscription extends Client
      *
      * @return array
      */
-    public function listSubscriptionsByCustomer($customerId)
+    public function listSubscriptionsByCustomer(string $customerId)
     {
         $cacheKey = sprintf('zoho_subscriptions_%s', $customerId);
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', 'subscriptions', [
-                'query' => ['customer_id' => $customerId],
-            ]);
+            $response = $this->sendRequest('GET', sprintf('subscriptions?customer_id=%s', $customerId));
 
             $result = $this->processResponse($response);
 

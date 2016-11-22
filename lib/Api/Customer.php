@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
 
@@ -13,21 +14,17 @@ use Zoho\Subscription\Client\Client;
 class Customer extends Client
 {
     /**
-     * @param string $customerEmail The customer's email
-     *
-     * @throws \Exception
+     * @param string $customerEmail
      *
      * @return array
      */
-    public function getListCustomersByEmail($customerEmail)
+    public function getListCustomersByEmail(string $customerEmail): array
     {
         $cacheKey = sprintf('zoho_customer_%s', md5($customerEmail));
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', 'customers', [
-                'query' => ['email' => $customerEmail],
-            ]);
+            $response = $this->sendRequest('GET', sprintf('customers?email=%s', $customerEmail));
 
             $result = $this->processResponse($response);
 
@@ -46,7 +43,7 @@ class Customer extends Client
      *
      * @return array
      */
-    public function getCustomerByEmail($customerEmail)
+    public function getCustomerByEmail(string $customerEmail): array
     {
         $customers = $this->getListCustomersByEmail($customerEmail);
 
@@ -60,13 +57,13 @@ class Customer extends Client
      *
      * @return array
      */
-    public function getCustomerById($customerId)
+    public function getCustomerById(string $customerId): array
     {
         $cacheKey = sprintf('zoho_customer_%s', $customerId);
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', sprintf('customers/%s', $customerId));
+            $response = $this->sendRequest('GET', sprintf('customers/%s', $customerId));
             $result = $this->processResponse($response);
 
             $customer = $result['customer'];
@@ -87,12 +84,9 @@ class Customer extends Client
      *
      * @return array|bool
      */
-    public function updateCustomer($customerId, $data)
+    public function updateCustomer(string $customerId, array $data)
     {
-        $response = $this->client->request('PUT', sprintf('customers/%s', $customerId), [
-            'content-type' => 'application/json',
-            'body' => json_encode($data),
-        ]);
+        $response = $this->sendRequest('PUT', sprintf('customers/%s', $customerId), ['content-type' => 'application/json'], json_encode($data));
 
         $result = $this->processResponse($response);
 
@@ -110,7 +104,7 @@ class Customer extends Client
     /**
      * @param array $customer
      */
-    private function deleteCustomerCache($customer)
+    private function deleteCustomerCache(array $customer)
     {
         $cacheKey = sprintf('zoho_customer_%s', $customer['customer_id']);
         $this->deleteCacheByKey($cacheKey);
@@ -126,9 +120,9 @@ class Customer extends Client
      *
      * @return array|bool
      */
-    public function createCustomer($data)
+    public function createCustomer(array $data)
     {
-        $response = $this->client->request('POST', 'customers', [
+        $response = $this->sendRequest('POST', 'customers', [
             'content-type' => 'application/json',
             'body' => json_encode($data),
         ]);
