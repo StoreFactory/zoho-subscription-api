@@ -48,13 +48,13 @@ class Addon extends Client
     }
 
     /**
-     * @param int $addonCode
+     * @param string $addonCode
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function getAddon(int $addonCode): array
+    public function getAddon(string $addonCode): array
     {
         $cacheKey = sprintf('addon_%s', $addonCode);
         $hit = $this->getFromCache($cacheKey);
