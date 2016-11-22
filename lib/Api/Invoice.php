@@ -47,7 +47,7 @@ class Invoice extends Client
      *
      * @return array
      */
-    public function getInvoice($invoiceId)
+    public function getInvoice(string $invoiceId)
     {
         $cacheKey = sprintf('zoho_invoice_%s', $invoiceId);
         $hit = $this->getFromCache($cacheKey);
@@ -74,7 +74,7 @@ class Invoice extends Client
      *
      * @return array
      */
-    public function getInvoicePdf($invoiceId)
+    public function getInvoicePdf(string $invoiceId)
     {
         $response = $this->sendRequest('GET', sprintf('invoices/%s', $invoiceId), [
             'query' => ['accept' => 'pdf'],
