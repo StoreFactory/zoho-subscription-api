@@ -55,13 +55,13 @@ class Plan extends Client
     /**
      * Returns a Plan by its identifier.
      *
-     * @param int $planCode
+     * @param string $planCode
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function getPlan(int $planCode): array
+    public function getPlan(string $planCode): array
     {
         $cacheKey = sprintf('plan_%s', $planCode);
         $hit = $this->getFromCache($cacheKey);
