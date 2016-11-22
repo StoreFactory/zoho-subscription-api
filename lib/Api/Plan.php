@@ -84,11 +84,11 @@ class Plan extends Client
      * get reccurent addons for given plan.
      *
      * @param array  $plans
-     * @param string $addonType
+     * @param string|null $addonType
      *
      * @return array
      */
-    public function getAddonsForPlan(array $plans, string $addonType): array
+    public function getAddonsForPlan(array $plans, string $addonType = null): array
     {
         $addonApi = new Addon($this->token, $this->organizationId, $this->cache, $this->ttl);
 
