@@ -54,7 +54,7 @@ class Client
 
     protected function processResponse(ResponseInterface $response): array
     {
-        $data = json_decode($response->getBody(), true);
+        $data = json_decode($response->getBody()->getContents(), true);
 
         if ($data['code'] != 0) {
             throw new \Exception('Zoho Api subscription error : '.$data['message']);
