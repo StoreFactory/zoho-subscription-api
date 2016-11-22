@@ -1,67 +1,58 @@
 <?php
+declare(strict_types=1);
 
 namespace Zoho\Subscription\Client;
 
 use Doctrine\Common\Cache\Cache;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Response;
+use Http\Discovery\HttpClientDiscovery;
+use Http\Discovery\MessageFactoryDiscovery;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    /**
-     * @var String
-     */
     protected $token;
 
-    /**
-     * @var String
-     */
     protected $organizationId;
 
-    /**
-     * @var Cache
-     */
     protected $cache;
 
-    /**
-     * @var GuzzleClient
-     */
     protected $client;
 
-    /**
-     * @var int
-     */
     protected $ttl;
 
-    /**
-     * @param string                            $token
-     * @param int                               $organizationId
-     * @param \Doctrine\Common\Cache\Cache|null $cache
-     * @param int                               $ttl
-     */
-    public function __construct($token, $organizationId, Cache $cache, $ttl = 7200)
+    protected $messageFactory;
+
+    public function __construct(string $token, int $organizationId, Cache $cache, int $ttl = 7200)
     {
         $this->token = $token;
         $this->organizationId = $organizationId;
         $this->ttl = $ttl;
         $this->cache = $cache;
-        $this->client = new GuzzleClient([
-            'headers' => [
-                'Authorization' => 'Zoho-authtoken '.$token,
-                'X-com-zoho-subscriptions-organizationid' => $organizationId,
-            ],
-            'base_uri' => 'https://subscriptions.zoho.com/api/v1/',
-        ]);
+        $this->client = HttpClientDiscovery::find();
+        $this->messageFactory = MessageFactoryDiscovery::find();
     }
 
-    /**
-     * @param Response $response
-     *
-     * @throws \Exception
-     *
-     * @return array
-     */
-    protected function processResponse(Response $response)
+    public function getFromCache(string $key)
+    {
+        // If the results are already cached
+        if ($this->cache->contains($key)) {
+            return unserialize($this->cache->fetch($key));
+        }
+
+        return false;
+    }
+
+    public function saveToCache(string $key, $values): bool
+    {
+        return $this->cache->save($key, serialize($values), $this->ttl);
+    }
+
+    public function deleteCacheByKey(string $key)
+    {
+        $this->cache->delete($key);
+    }
+
+    protected function processResponse(ResponseInterface $response): array
     {
         $data = json_decode($response->getBody(), true);
 
@@ -72,45 +63,21 @@ class Client
         return $data;
     }
 
-    /**
-     * @param $key
-     *
-     * @throws \LogicException
-     *
-     * @return bool|mixed
-     */
-    public function getFromCache($key)
+    protected function sendRequest(string $method, string $uri, array $headers = [], string $body = null)
     {
-        // If the results are already cached
-        if ($this->cache->contains($key)) {
-            return unserialize($this->cache->fetch($key));
-        }
+        $baseUri = 'https://subscriptions.zoho.com/api/v1/';
+        $request = $this->messageFactory->createRequest($method, $baseUri.$uri, $this->getRequestHeaders($headers));
 
-        return false;
+        return $this->client->sendRequest($request);
     }
 
-    /**
-     * @param string $key
-     * @param mixed  $values
-     *
-     * @throws \LogicException
-     *
-     * @return bool
-     */
-    public function saveToCache($key, $values)
+    protected function getRequestHeaders(array $headers = [])
     {
-        if (null === $key) {
-            throw new \LogicException('If you want to save to cache, an unique key must be set');
-        }
+        $defaultHeaders = [
+            'Authorization' => 'Zoho-authtoken '.$this->token,
+            'X-com-zoho-subscriptions-organizationid' => $this->organizationId,
+        ];
 
-        return $this->cache->save($key, serialize($values), $this->ttl);
-    }
-
-    /**
-     * @param string $key
-     */
-    public function deleteCacheByKey($key)
-    {
-        $this->cache->delete($key);
+        return array_merge($defaultHeaders, $headers);
     }
 }
