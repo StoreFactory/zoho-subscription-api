@@ -66,7 +66,7 @@ class Client
     protected function sendRequest(string $method, string $uri, array $headers = [], string $body = null)
     {
         $baseUri = 'https://subscriptions.zoho.com/api/v1/';
-        $request = $this->messageFactory->createRequest($method, $baseUri.$uri, $this->getRequestHeaders($headers));
+        $request = $this->messageFactory->createRequest($method, $baseUri.$uri, $this->getRequestHeaders($headers), $body);
 
         return $this->client->sendRequest($request);
     }
