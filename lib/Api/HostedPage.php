@@ -41,4 +41,19 @@ class HostedPage extends Client
 
         return $this->processResponse($response);
     }
+
+    public function retrieveHostedPageFromSubscriptionId(string $subscriptionId): array
+    {
+        $hostedPages = $this->listHostedPages();
+
+        foreach ($hostedPages as $hostedPage) {
+            if (!empty($hostedPage['data'])) {
+                if ($hostedPage['data']['subscription']['subscription_id'] == $subscriptionId) {
+                    return $hostedPage;
+                }
+            }
+        }
+
+        return null;
+    }
 }
