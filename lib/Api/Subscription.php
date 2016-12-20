@@ -14,6 +14,8 @@ use Zoho\Subscription\Client\Client;
  */
 class Subscription extends Client
 {
+    const STATUS_UNPAID = 'unpaid';
+
     /**
      * @param array $data
      *
