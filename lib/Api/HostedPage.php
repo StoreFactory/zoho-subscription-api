@@ -7,6 +7,8 @@ use Zoho\Subscription\Client\Client;
 
 class HostedPage extends Client
 {
+    const STATUS_UNPAID = 'unpaid';
+
     public function listHostedPages(): array
     {
         $response = $this->sendRequest('GET', 'hostedpages', ['content-type' => 'application/json'], json_encode($data));
