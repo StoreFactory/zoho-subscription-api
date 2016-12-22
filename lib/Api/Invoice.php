@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
 
@@ -19,15 +20,13 @@ class Invoice extends Client
      *
      * @return array
      */
-    public function listInvoicesByCustomer($customerId)
+    public function listInvoicesByCustomer(string $customerId): array
     {
         $cacheKey = sprintf('zoho_invoices_%s', $customerId);
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', 'invoices', [
-                'query' => ['customer_id' => $customerId],
-            ]);
+            $response = $this->sendRequest('GET', sprintf('invoices?customer_id=%s', $customerId));
 
             $result = $this->processResponse($response);
 
@@ -48,13 +47,13 @@ class Invoice extends Client
      *
      * @return array
      */
-    public function getInvoice($invoiceId)
+    public function getInvoice(string $invoiceId)
     {
         $cacheKey = sprintf('zoho_invoice_%s', $invoiceId);
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', sprintf('invoices/%s', $invoiceId));
+            $response = $this->sendRequest('GET', sprintf('invoices/%s', $invoiceId));
 
             $result = $this->processResponse($response);
 
@@ -75,9 +74,9 @@ class Invoice extends Client
      *
      * @return array
      */
-    public function getInvoicePdf($invoiceId)
+    public function getInvoicePdf(string $invoiceId)
     {
-        $response = $this->client->request('GET', sprintf('invoices/%s', $invoiceId), [
+        $response = $this->sendRequest('GET', sprintf('invoices/%s', $invoiceId), [
             'query' => ['accept' => 'pdf'],
         ]);
 

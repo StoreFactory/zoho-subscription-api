@@ -1,85 +1,38 @@
 <?php
+declare(strict_types=1);
 
 namespace Zoho\Subscription\Client;
 
 use Doctrine\Common\Cache\Cache;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Response;
+use Http\Discovery\HttpClientDiscovery;
+use Http\Discovery\MessageFactoryDiscovery;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    /**
-     * @var String
-     */
     protected $token;
 
-    /**
-     * @var String
-     */
     protected $organizationId;
 
-    /**
-     * @var Cache
-     */
     protected $cache;
 
-    /**
-     * @var GuzzleClient
-     */
     protected $client;
 
-    /**
-     * @var int
-     */
     protected $ttl;
 
-    /**
-     * @param string                            $token
-     * @param int                               $organizationId
-     * @param \Doctrine\Common\Cache\Cache|null $cache
-     * @param int                               $ttl
-     */
-    public function __construct($token, $organizationId, Cache $cache, $ttl = 7200)
+    protected $messageFactory;
+
+    public function __construct(string $token, int $organizationId, Cache $cache, int $ttl = 7200)
     {
         $this->token = $token;
         $this->organizationId = $organizationId;
         $this->ttl = $ttl;
         $this->cache = $cache;
-        $this->client = new GuzzleClient([
-            'headers' => [
-                'Authorization' => 'Zoho-authtoken '.$token,
-                'X-com-zoho-subscriptions-organizationid' => $organizationId,
-            ],
-            'base_uri' => 'https://subscriptions.zoho.com/api/v1/',
-        ]);
+        $this->client = HttpClientDiscovery::find();
+        $this->messageFactory = MessageFactoryDiscovery::find();
     }
 
-    /**
-     * @param Response $response
-     *
-     * @throws \Exception
-     *
-     * @return array
-     */
-    protected function processResponse(Response $response)
-    {
-        $data = json_decode($response->getBody(), true);
-
-        if ($data['code'] != 0) {
-            throw new \Exception('Zoho Api subscription error : '.$data['message']);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param $key
-     *
-     * @throws \LogicException
-     *
-     * @return bool|mixed
-     */
-    public function getFromCache($key)
+    public function getFromCache(string $key)
     {
         // If the results are already cached
         if ($this->cache->contains($key)) {
@@ -89,28 +42,42 @@ class Client
         return false;
     }
 
-    /**
-     * @param string $key
-     * @param mixed  $values
-     *
-     * @throws \LogicException
-     *
-     * @return bool
-     */
-    public function saveToCache($key, $values)
+    public function saveToCache(string $key, $values): bool
     {
-        if (null === $key) {
-            throw new \LogicException('If you want to save to cache, an unique key must be set');
-        }
-
         return $this->cache->save($key, serialize($values), $this->ttl);
     }
 
-    /**
-     * @param string $key
-     */
-    public function deleteCacheByKey($key)
+    public function deleteCacheByKey(string $key)
     {
         $this->cache->delete($key);
+    }
+
+    protected function processResponse(ResponseInterface $response): array
+    {
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        if ($data['code'] != 0) {
+            throw new \Exception('Zoho Api subscription error : '.$data['message']);
+        }
+
+        return $data;
+    }
+
+    protected function sendRequest(string $method, string $uri, array $headers = [], string $body = null)
+    {
+        $baseUri = 'https://subscriptions.zoho.com/api/v1/';
+        $request = $this->messageFactory->createRequest($method, $baseUri.$uri, $this->getRequestHeaders($headers), $body);
+
+        return $this->client->sendRequest($request);
+    }
+
+    protected function getRequestHeaders(array $headers = [])
+    {
+        $defaultHeaders = [
+            'Authorization' => 'Zoho-authtoken '.$this->token,
+            'X-com-zoho-subscriptions-organizationid' => $this->organizationId,
+        ];
+
+        return array_merge($defaultHeaders, $headers);
     }
 }

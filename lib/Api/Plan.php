@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
 
@@ -28,13 +29,13 @@ class Plan extends Client
      *
      * @return array
      */
-    public function listPlans($filters = [], $withAddons = true, $addonType = null)
+    public function listPlans(array $filters = [], bool $withAddons = true, string $addonType = null): array
     {
         $cacheKey = 'plans';
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', 'plans');
+            $response = $this->sendRequest('GET', 'plans');
 
             $plans = $this->processResponse($response);
             $hit = $plans['plans'];
@@ -54,19 +55,19 @@ class Plan extends Client
     /**
      * Returns a Plan by its identifier.
      *
-     * @param int $planCode
+     * @param string $planCode
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function getPlan($planCode)
+    public function getPlan(string $planCode): array
     {
         $cacheKey = sprintf('plan_%s', $planCode);
         $hit = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
-            $response = $this->client->request('GET', sprintf('plans/%s', $planCode));
+            $response = $this->sendRequest('GET', sprintf('plans/%s', $planCode));
 
             $data = $this->processResponse($response);
             $plan = $data['plan'];
@@ -83,11 +84,11 @@ class Plan extends Client
      * get reccurent addons for given plan.
      *
      * @param array  $plans
-     * @param string $addonType
+     * @param string|null $addonType
      *
      * @return array
      */
-    public function getAddonsForPlan($plans, $addonType)
+    public function getAddonsForPlan(array $plans, string $addonType = null): array
     {
         $addonApi = new Addon($this->token, $this->organizationId, $this->cache, $this->ttl);
 
@@ -120,7 +121,7 @@ class Plan extends Client
      *
      * @return array
      */
-    public function filterPlans($plans, $filters)
+    public function filterPlans(array $plans, array $filters): array
     {
         foreach ($filters as $key => $filter) {
             if (array_key_exists($key, current($plans))) {
