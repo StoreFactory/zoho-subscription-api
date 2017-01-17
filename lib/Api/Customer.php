@@ -47,6 +47,10 @@ class Customer extends Client
     {
         $customers = $this->getListCustomersByEmail($customerEmail);
 
+        if (count($customers) === 0) {
+            throw new \LogicException(sprintf('customer with email %s not found', $customerEmail));
+        }
+
         return $this->getCustomerById($customers[0]['customer_id']);
     }
 
