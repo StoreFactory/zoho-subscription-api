@@ -126,10 +126,7 @@ class Customer extends Client
      */
     public function createCustomer(array $data)
     {
-        $response = $this->sendRequest('POST', 'customers', [
-            'content-type' => 'application/json',
-            'body' => json_encode($data),
-        ]);
+        $response = $this->sendRequest('POST', 'customers', ['content-type' => 'application/json'], json_encode($data));
 
         $result = $this->processResponse($response);
 
