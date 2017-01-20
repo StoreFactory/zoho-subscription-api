@@ -7,6 +7,13 @@ use Zoho\Subscription\Client\Client;
 
 class HostedPage extends Client
 {
+    public function getHostedPageById(string $hostedPageId): array
+    {
+        $response = $this->sendRequest('GET', sprintf('hostedpages/%s', $hostedPageId));
+
+        return $this->processResponse($response);
+    }
+
     public function listHostedPages(): array
     {
         $response = $this->sendRequest('GET', 'hostedpages', ['content-type' => 'application/json'], json_encode($data));
