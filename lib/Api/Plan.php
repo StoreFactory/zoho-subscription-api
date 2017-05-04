@@ -133,4 +133,15 @@ class Plan extends Client
 
         return $plans;
     }
+
+    /**
+     * get price by planCode
+     *
+     */
+    public function getPriceByPlanCode(string $planCode): string
+    {
+        $plan = $this->getPlan($planCode);
+
+        return (array_key_exists('recurring_price', $plan)) ? $plan['recurring_price'] : '';
+    }
 }
