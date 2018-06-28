@@ -1,5 +1,7 @@
 {
     "name": "storefactory/zoho-subscription-api",
+    "license": "MIT",
+    "keywords": ["zoho", "subscription"],
     "type": "library",
     "autoload": {
         "psr-4": {
