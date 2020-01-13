@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Zoho\Subscription\Client;
@@ -24,11 +25,11 @@ class Client
 
     public function __construct(string $token, int $organizationId, Cache $cache, int $ttl = 7200)
     {
-        $this->token = $token;
+        $this->token          = $token;
         $this->organizationId = $organizationId;
-        $this->ttl = $ttl;
-        $this->cache = $cache;
-        $this->client = HttpClientDiscovery::find();
+        $this->ttl            = $ttl;
+        $this->cache          = $cache;
+        $this->client         = HttpClientDiscovery::find();
         $this->messageFactory = MessageFactoryDiscovery::find();
     }
 
@@ -56,7 +57,7 @@ class Client
     {
         $data = json_decode($response->getBody()->getContents(), true);
 
-        if ($data['code'] != 0) {
+        if (0 != $data['code']) {
             throw new \Exception('Zoho Api subscription error : '.$data['message']);
         }
 
@@ -74,7 +75,7 @@ class Client
     protected function getRequestHeaders(array $headers = [])
     {
         $defaultHeaders = [
-            'Authorization' => 'Zoho-authtoken '.$this->token,
+            'Authorization'                           => 'Zoho-authtoken '.$this->token,
             'X-com-zoho-subscriptions-organizationid' => $this->organizationId,
         ];
 

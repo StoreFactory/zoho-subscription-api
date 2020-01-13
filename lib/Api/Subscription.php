@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
@@ -10,15 +11,13 @@ use Zoho\Subscription\Client\Client;
  *
  * @author Elodie Nazaret <elodie@yproximite.com>
  *
- * @link https://www.zoho.com/subscriptions/api/v1/#subscriptions
+ * @see https://www.zoho.com/subscriptions/api/v1/#subscriptions
  */
 class Subscription extends Client
 {
     const STATUS_UNPAID = 'unpaid';
 
     /**
-     * @param array $data
-     *
      * @throws \Exception
      *
      * @return string
@@ -32,7 +31,6 @@ class Subscription extends Client
 
     /**
      * @param string $subscriptionId The subscription's id
-     * @param array  $data
      *
      * @throws \Exception
      *
@@ -84,7 +82,7 @@ class Subscription extends Client
     public function getSubscription(string $subscriptionId)
     {
         $cacheKey = sprintf('zoho_subscription_%s', $subscriptionId);
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', sprintf('subscriptions/%s', $subscriptionId));
@@ -111,7 +109,7 @@ class Subscription extends Client
     public function listSubscriptionsByCustomer(string $customerId)
     {
         $cacheKey = sprintf('zoho_subscriptions_%s', $customerId);
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', sprintf('subscriptions?customer_id=%s', $customerId));

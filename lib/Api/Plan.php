@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
@@ -11,7 +12,7 @@ use Zoho\Subscription\Client\Client;
  * @author Tristan Perchec <tristan.perchec@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
  *
- * @link https://www.zoho.com/subscriptions/api/v1/#plans
+ * @see https://www.zoho.com/subscriptions/api/v1/#plans
  */
 class Plan extends Client
 {
@@ -26,19 +27,17 @@ class Plan extends Client
      * @param array $filters associative array of filters
      *
      * @throws \Exception
-     *
-     * @return array
      */
     public function listPlans(array $filters = [], bool $withAddons = true, string $addonType = null): array
     {
         $cacheKey = 'plans';
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', 'plans');
 
             $plans = $this->processResponse($response);
-            $hit = $plans['plans'];
+            $hit   = $plans['plans'];
 
             $this->saveToCache($cacheKey, $hit);
         }
@@ -55,16 +54,12 @@ class Plan extends Client
     /**
      * Returns a Plan by its identifier.
      *
-     * @param string $planCode
-     *
      * @throws \Exception
-     *
-     * @return array
      */
     public function getPlan(string $planCode): array
     {
         $cacheKey = sprintf('plan_%s', $planCode);
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', sprintf('plans/%s', $planCode));
@@ -82,11 +77,6 @@ class Plan extends Client
 
     /**
      * get reccurent addons for given plan.
-     *
-     * @param array  $plans
-     * @param string|null $addonType
-     *
-     * @return array
      */
     public function getAddonsForPlan(array $plans, string $addonType = null): array
     {
@@ -115,11 +105,6 @@ class Plan extends Client
 
     /**
      * filter given plans with given filters.
-     *
-     * @param array $plans
-     * @param array $filters
-     *
-     * @return array
      */
     public function filterPlans(array $plans, array $filters): array
     {
@@ -136,7 +121,6 @@ class Plan extends Client
 
     /**
      * get price by planCode
-     *
      */
     public function getPriceByPlanCode(string $planCode): float
     {

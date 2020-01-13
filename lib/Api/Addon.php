@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
@@ -11,7 +12,7 @@ use Zoho\Subscription\Client\Client;
  * @author Tristan Perchec <tristan.perchec@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
  *
- * @link https://www.zoho.com/subscriptions/api/v1/#addons
+ * @see https://www.zoho.com/subscriptions/api/v1/#addons
  */
 class Addon extends Client
 {
@@ -19,19 +20,17 @@ class Addon extends Client
      * @param array $filters associative array of filters
      *
      * @throws \Exception
-     *
-     * @return array
      */
     public function listAddons(array $filters = []): array
     {
         $cacheKey = 'addons';
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', $cacheKey);
 
             $addons = $this->processResponse($response);
-            $hit = $addons['addons'];
+            $hit    = $addons['addons'];
 
             $this->saveToCache($cacheKey, $hit);
         }
@@ -48,21 +47,17 @@ class Addon extends Client
     }
 
     /**
-     * @param string $addonCode
-     *
      * @throws \Exception
-     *
-     * @return array
      */
     public function getAddon(string $addonCode): array
     {
         $cacheKey = sprintf('addon_%s', $addonCode);
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', sprintf('addons/%s', $addonCode));
 
-            $data = $this->processResponse($response);
+            $data  = $this->processResponse($response);
             $addon = $data['addon'];
 
             $this->saveToCache($cacheKey, $addon);

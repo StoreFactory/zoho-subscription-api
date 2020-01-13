@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Zoho\Subscription\Api;
@@ -9,7 +10,7 @@ use Zoho\Subscription\Client\Client;
  * @author Hang Pham <thi@yproximite.com>
  * @author Tristan Bessoussa <tristan.bessoussa@gmail.com>
  *
- * @link https://www.zoho.com/subscriptions/api/v1/#invoices
+ * @see https://www.zoho.com/subscriptions/api/v1/#invoices
  */
 class Invoice extends Client
 {
@@ -17,13 +18,11 @@ class Invoice extends Client
      * @param string $customerId The customer's id
      *
      * @throws \Exception
-     *
-     * @return array
      */
     public function listInvoicesByCustomer(string $customerId): array
     {
         $cacheKey = sprintf('zoho_invoices_%s', $customerId);
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', sprintf('invoices?customer_id=%s', $customerId));
@@ -50,7 +49,7 @@ class Invoice extends Client
     public function getInvoice(string $invoiceId)
     {
         $cacheKey = sprintf('zoho_invoice_%s', $invoiceId);
-        $hit = $this->getFromCache($cacheKey);
+        $hit      = $this->getFromCache($cacheKey);
 
         if (false === $hit) {
             $response = $this->sendRequest('GET', sprintf('invoices/%s', $invoiceId));
